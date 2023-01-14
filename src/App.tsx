@@ -25,7 +25,7 @@ function App() {
   })
 
 
-  //functions
+  //function
   function copyToClipboard(e:any) {
     navigator.clipboard.writeText(e.target.textContent)
     alert('Copied to clipboard')
