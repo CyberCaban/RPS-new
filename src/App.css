@@ -52,15 +52,18 @@ img{
 
 .msg{
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     margin-bottom: 10px;
 }
 
-.msgText{
+.msgTop{
     display: flex;
-    width: 180px;
-    max-width: 180px;
-    margin: 0;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.msgAuthor{
+    font-size: 12px;
 }
 
 .msgDate{
@@ -68,4 +71,12 @@ img{
     justify-content: flex-end;
     margin-right: 10px;
     font-size: 12px;
+}
+
+.msgText{
+    display: flex;
+    width: 180px;
+    max-width: 180px;
+    margin: 0;
+    font-size: 19px;
 }

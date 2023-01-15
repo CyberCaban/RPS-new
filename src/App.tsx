@@ -17,6 +17,7 @@ function App() {
   const [CurrentElement, setCurrentElement] = useState('')
   const [CurrentRoom, setCurrentRoom] = useState('')
   const [User_id, setUser_id] = useState('')
+  const [Result, setResult] = useState('')
   const [Messages, setMessages] = useState<Message[]>([])
 
   //socket.io
@@ -25,12 +26,19 @@ function App() {
       setUser_id(socket.id)
       console.log('your id:' + socket.id);
     })
-
+    
+    //получение сообщений и запись их в стейт
     socket.on('getMessage', (msg)=>{
       let temp:Message[] = Messages.slice()
       temp.push(msg)
       setMessages(temp)
-      console.log(Messages);
+    })
+
+    //получение результата с сервера
+    socket.on('send result',(result)=>{
+      setResult(result)
+      console.log(result);
+      
     })
 
     //перемотка к последним сообщениям
@@ -53,8 +61,18 @@ function App() {
     setCurrentElement(e.target.textContent.toLowerCase())
   }
 
+  function sendElementToServer(){
+    //создание объекта чтобы определить кто выйграл
+    const playerMove = {
+      playerID: socket.id,
+      chosenElement: CurrentElement
+    }
+    socket.emit('player_current_element', playerMove)    
+  }
+
   function joinRoom(e:any) {
     e.preventDefault()
+    setMessages([])
     let roomID = e.target[0].value
     socket.emit('join room', roomID)
     setCurrentRoom(roomID)
@@ -87,8 +105,11 @@ function App() {
   const msgArray = Messages.map((item,index)=>{
     return (
       <div key={index} className={`msg ` + index}>
+        <div className="msgTop">
+          <span className='msgAuthor'>{item.author == socket.id ? 'You' : 'Not You'}</span>
+          <span className='msgDate'>{item.date}</span>
+        </div>
         <p className='msgText'>{item.messageText}</p>
-        <span className='msgDate'>{item.date}</span>
       </div>
     )
   })
@@ -112,7 +133,10 @@ function App() {
       </div>
     
       <div className="field">
-        <button id="fight_button">FIGHT!</button>
+        <div className="result_window">
+          <h1>{Result}</h1>
+        </div>
+        <button id="fight_button" onClick={()=>sendElementToServer()}>FIGHT!</button>
         <div id="current_img">
           <img src={`../src/assets/${CurrentElement}.svg`} alt="" />
         </div>
