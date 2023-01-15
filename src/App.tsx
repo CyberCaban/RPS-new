@@ -1,16 +1,23 @@
 import { useEffect, useState } from 'react'
-import { Socket } from 'socket.io-client'
 import io from 'socket.io-client'
 import './App.css'
 
+//подключение апи
 const ws_url = 'http://localhost:3000'
 const socket = io(ws_url)
+
+type Message = {
+  author:string,
+  messageText: string,
+  date: string
+}
 
 function App() {
   //constants
   const [CurrentElement, setCurrentElement] = useState('')
   const [CurrentRoom, setCurrentRoom] = useState('')
   const [User_id, setUser_id] = useState('')
+  const [Messages, setMessages] = useState<Message[]>([])
 
   //socket.io
   useEffect(()=>{
@@ -18,6 +25,17 @@ function App() {
       setUser_id(socket.id)
       console.log('your id:' + socket.id);
     })
+
+    socket.on('getMessage', (msg)=>{
+      let temp:Message[] = Messages.slice()
+      temp.push(msg)
+      setMessages(temp)
+      console.log(Messages);
+    })
+
+    //перемотка к последним сообщениям
+    const messageDiv = document.getElementById('messages')
+    messageDiv!.scrollTop = messageDiv!.scrollHeight
 
     return ()=>{
       socket.off('connect')
@@ -52,7 +70,7 @@ function App() {
     let date = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
 
     //создание объекта сообщения
-    const msg = {
+    let tempMSG: Message = {
       author:socket.id,
       messageText: messageText,
       date: date
@@ -60,11 +78,20 @@ function App() {
 
     //отправка сообщения на сервер
     if (messageText) {
-      console.log(msg);
-      socket.emit('send message', messageText)
+      // console.log(msg);
+      socket.emit('send message', tempMSG)
       e.target[0].value = ''
     }
   }
+
+  const msgArray = Messages.map((item,index)=>{
+    return (
+      <div key={index} className={`msg ` + index}>
+        <p className='msgText'>{item.messageText}</p>
+        <span className='msgDate'>{item.date}</span>
+      </div>
+    )
+  })
 
   //render
   return (
@@ -78,7 +105,7 @@ function App() {
         <p>Your ID: <span id="user_id" onClick={(e)=>copyToClipboard(e)}>{User_id}</span></p>
         <p>Your room: <span id="current_room" onClick={(e)=>copyToClipboard(e)}>{CurrentRoom}</span></p>
 
-        <ul id="messages"></ul>
+        <ul id="messages">{msgArray}</ul>
         <form id="message_form" onSubmit={(e)=>sendMessage(e)}>
           <input id="message_input"></input>
         </form>

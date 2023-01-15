@@ -42,10 +42,30 @@ img{
     display: flex;
     flex-direction: column;
     padding-left: 20px;
-    width: 180px;
+    width: 220px;
     height: 220px;
-    max-width: 180px;
+    max-width: 220px;
     overflow: scroll;
     overflow-x: hidden;
-    border: 1px black solid;
+    /* border: 1px black solid; */
+}
+
+.msg{
+    display: flex;
+    flex-direction: column-reverse;
+    margin-bottom: 10px;
+}
+
+.msgText{
+    display: flex;
+    width: 180px;
+    max-width: 180px;
+    margin: 0;
+}
+
+.msgDate{
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+    font-size: 12px;
 }
