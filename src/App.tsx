@@ -85,13 +85,18 @@ function App() {
     let messageText = e.target[0].value
 
     //создание даты чч:мм:сс
-    let date = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
+    let formatter = new Intl.DateTimeFormat('ru', {
+      hour:'2-digit',
+      minute:'2-digit',
+      second:'2-digit'
+    })
+    let date = new Date()
 
     //создание объекта сообщения
     let tempMSG: Message = {
       author:socket.id,
       messageText: messageText,
-      date: date
+      date: formatter.format(date)
     }
 
     //отправка сообщения на сервер
