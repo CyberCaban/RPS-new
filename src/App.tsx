@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import "./App.css";
 
 //подключение апи
-const ws_url = "http://localhost:3000";
+const ws_url = "https://rps-new-api.vercel.app/";
 const socket = io(ws_url);
 
 type Message = {
