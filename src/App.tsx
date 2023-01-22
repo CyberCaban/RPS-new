@@ -19,6 +19,7 @@ function App() {
   const [User_id, setUser_id] = useState('')
   const [Result, setResult] = useState('')
   const [Messages, setMessages] = useState<Message[]>([])
+  const [IsDisabled, setIsDisabled] = useState(false)
 
   //socket.io
   useEffect(()=>{
@@ -34,22 +35,31 @@ function App() {
       setMessages(temp)
     })
 
-    //получение результата с сервера
-    socket.on('send result',(result)=>{
-      setResult(result)
-      console.log(result);
-      
-    })
-
     //перемотка к последним сообщениям
     const messageDiv = document.getElementById('messages')
     messageDiv!.scrollTop = messageDiv!.scrollHeight
+
+    //автоматическая очистка результата
+    if (Result!='') {
+      setTimeout(() => {
+        setResult('')
+      }, 5000);
+    }
 
     return ()=>{
       socket.off('connect')
     }
   })
 
+  useEffect(()=>{
+
+    //получение результата с сервера
+    socket.on('send result',(result)=>{
+      setResult(result)
+      setIsDisabled(false)
+      console.log(result);
+    })
+  },[])
 
   //function
   function copyToClipboard(e:any) {
@@ -62,12 +72,19 @@ function App() {
   }
 
   function sendElementToServer(){
-    //создание объекта чтобы определить кто выйграл
-    const playerMove = {
-      playerID: socket.id,
-      chosenElement: CurrentElement
+    if (CurrentRoom!='') {
+      //создание объекта чтобы определить кто выйграл
+      const playerMove = {
+        playerID: socket.id,
+        chosenElement: CurrentElement
+      }
+      socket.emit('player_current_element', playerMove)
+      //отключение кнопки fight
+      setIsDisabled(true)
     }
-    socket.emit('player_current_element', playerMove)    
+    else{
+      alert('select a room')
+    }
   }
 
   function joinRoom(e:any) {
@@ -141,7 +158,7 @@ function App() {
         <div className="result_window">
           <h1>{Result}</h1>
         </div>
-        <button id="fight_button" onClick={()=>sendElementToServer()}>FIGHT!</button>
+        <button id="fight_button" disabled={IsDisabled} onClick={()=>sendElementToServer()}>FIGHT!</button>
         <div id="current_img">
           <img src={`../src/assets/${CurrentElement}.svg`} alt="" />
         </div>

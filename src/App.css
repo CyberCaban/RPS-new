@@ -28,6 +28,11 @@ img{
     margin-top: auto;
 }
 
+#fight_button:disabled{
+    cursor: not-allowed;
+    border-color: transparent;
+}
+
 .choose{
     /* margin-top: auto; */
 }
@@ -67,8 +72,6 @@ img{
 }
 
 .msgDate{
-    display: flex;
-    justify-content: flex-end;
     margin-right: 10px;
     font-size: 12px;
 }
@@ -79,4 +82,10 @@ img{
     max-width: 180px;
     margin: 0;
     font-size: 19px;
+}
+
+@keyframes res_screen {
+    0%{
+
+    }
 }
